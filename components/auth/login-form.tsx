@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 
-// import { LoginSchema } from '@/schemas'
+import { LoginSchema } from '@/schemas'
 import { Input } from '@/components/ui/input'
 import {
   Form,
@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FormError } from './form-error'
 import { FormSuccess } from './form-success'
 
-// import { login } from '@/actions/login'
+import { login } from '@/actions/login'
 
 export const LoginForm = () => {
   const searchParams = useSearchParams()
@@ -37,13 +37,13 @@ export const LoginForm = () => {
   const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, startTransition] = useTransition()
 
-  // const form = useForm<z.infer<typeof LoginSchema>>({
-  //   resolver: zodResolver(LoginSchema),
-  //   defaultValues: {
-  //     email: '',
-  //     password: '',
-  //   },
-  // })
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError('')
@@ -56,15 +56,13 @@ export const LoginForm = () => {
             form.reset()
             setError(data.error)
           }
-
           if (data?.success) {
             form.reset()
             setSuccess(data.success)
           }
-
-          if (data?.twoFactor) {
-            setShowTwoFactor(true)
-          }
+          //     if (data?.twoFactor) {
+          //       setShowTwoFactor(true)
+          //     }
         })
         .catch(() => setError('Something went wrong'))
     })
