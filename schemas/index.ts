@@ -60,13 +60,13 @@ export const LoginSchema = z.object({
 })
 
 export const RegisterSchema = z.object({
-  email: z.string().email({
-    message: 'Email is required',
+  phone: z.string().min(11, {
+    message: 'شماره تلفن ضروری است',
   }),
   password: z.string().min(6, {
-    message: 'Minimum 6 characters required',
+    message: 'حداقل 6 کاراکتر الزامی است.',
   }),
   name: z.string().min(1, {
-    message: 'Name is required',
+    message: 'نام کاربری الزامی است',
   }),
 })

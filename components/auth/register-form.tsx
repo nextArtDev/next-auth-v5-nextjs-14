@@ -1,17 +1,16 @@
 'use client'
 
 import * as z from 'zod'
-import { useForm } from 'react-hook-form'
 import { useState, useTransition } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 
-import { LoginSchema } from '@/schemas'
+import { RegisterSchema } from '@/schemas'
 import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,57 +21,39 @@ import { Button } from '@/components/ui/button'
 import { FormError } from './form-error'
 import { FormSuccess } from './form-success'
 
-import { login } from '@/actions/login'
+import { register } from '@/actions/register'
 
-export const LoginForm = () => {
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl')
-  const urlError =
-    searchParams.get('error') === 'OAuthAccountNotLinked'
-      ? 'Email already in use with different provider!'
-      : ''
-
-  const [showTwoFactor, setShowTwoFactor] = useState(false)
+export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      email: '',
+      phone: '',
       password: '',
+      name: '',
     },
   })
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError('')
     setSuccess('')
 
     startTransition(() => {
-      login(values, callbackUrl)
-        .then((data) => {
-          if (data?.error) {
-            form.reset()
-            setError(data.error)
-          }
-          if (data?.success) {
-            form.reset()
-            setSuccess(data.success)
-          }
-          //     if (data?.twoFactor) {
-          //       setShowTwoFactor(true)
-          //     }
-        })
-        .catch(() => setError('Something went wrong'))
+      register(values).then((data) => {
+        setError(data.error)
+        setSuccess(data.success)
+      })
     })
   }
 
   return (
     <CardWrapper
-      headerLabel="Welcome back"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/register"
+      headerLabel="ایجاد حساب"
+      backButtonLabel="قبلا حساب ایجاد کرده‌اید؟"
+      backButtonHref="/login"
       showSocial
     >
       <Form {...form}>
@@ -80,19 +61,41 @@ export const LoginForm = () => {
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>نام کاربری</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="john.doe@example.com"
-                      type="email"
+                      placeholder="John Doe"
                     />
                   </FormControl>
                   <FormMessage />
+                  <FormDescription>
+                    این نام در صفحه شما نمایش داده خواهد شد{' '}
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>موبایل</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="0900000000"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    کد تایید به این شماره ارسال خواهد شد.
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -101,7 +104,7 @@ export const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>رمز عبور</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -110,23 +113,15 @@ export const LoginForm = () => {
                       type="password"
                     />
                   </FormControl>
-                  <Button
-                    size="sm"
-                    variant="link"
-                    asChild
-                    className="px-0 font-normal"
-                  >
-                    <Link href="/reset">Forgot password?</Link>
-                  </Button>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormError message={error || urlError} />
+          <FormError message={error} />
           <FormSuccess message={success} />
           <Button disabled={isPending} type="submit" className="w-full">
-            {showTwoFactor ? 'Confirm' : 'Login'}
+            ارسال کد تایید
           </Button>
         </form>
       </Form>
