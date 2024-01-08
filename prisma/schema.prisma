@@ -9,19 +9,20 @@ datasource db {
 }
 
 model User {
-  id               Int       @id @default(autoincrement())
-  phone            String    @unique
-  name             String
-  password         String
-  image            Image?    @relation(fields: [imageId], references: [id])
-  role             Role      @default(USER)
-  isVerified       Boolean   @default(false)
+  id         String  @id @default(cuid())
+  phone      String  @unique
+  name       String
+  password   String
+  image      Image?  @relation(fields: [imageId], references: [id])
+  role       Role    @default(USER)
+  isVerified Boolean @default(false)
+
   verificationCode Int?
   verificationDate DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  imageId   Int?
+  imageId   String?
 }
 
 enum Role {
@@ -30,7 +31,7 @@ enum Role {
 }
 
 model Image {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(cuid())
   url        String   @db.Text
   key        String   @db.Text
   created_at DateTime @default(now())
