@@ -52,7 +52,7 @@ interface VerifySmsType {
 export const verifySms = async (values: VerifySmsType) => {
   const { id, verificationCode } = values
 
-  console.log(verificationCode)
+  // console.log(verificationCode)
 
   if (
     verificationCode.length > 6 ||

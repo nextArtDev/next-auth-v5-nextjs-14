@@ -48,7 +48,7 @@ export const RegisterForm = () => {
         setError(data.error)
         setSuccess(data.success)
         if (data.success) {
-          router.push('/otp')
+          router.push(`/otp/${values.phone}`)
         }
       })
     })

@@ -68,28 +68,28 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   //   verificationToken.token,
   // );
 
-  return { success: 'کد تایید به شماره شما ارسال شد.' }
+  return { success: 'کد تایید به شماره شما ارسال شد.', phone }
 }
 
 export const activation = async (values: {
-  id: string
+  phone: string
   verificationCode: string
 }) => {
-  const { id, verificationCode } = values
+  const { phone, verificationCode } = values
 
-  const user = await getUserById(id)
+  const user = await getUserByPhoneNumber(phone)
 
   if (!user?.phone) {
     return { error: 'کاربر با این شماره وجود ندارد.' }
   }
 
-  const smsVerification = await verifySms({ id, verificationCode })
+  const smsVerification = await verifySms({ id: user.id, verificationCode })
 
   if (smsVerification?.error) {
     return { error: smsVerification.error }
   }
 
-  console.log(smsVerification)
+  // console.log(smsVerification)
 
   return { success: 'اکانت شما با موفقیت فعال شد.' }
 }
