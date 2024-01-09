@@ -7,6 +7,7 @@ import { activation } from '@/actions/register'
 import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
+import { sendSms } from '@/actions/sms'
 
 type FormData = {
   otp: string
@@ -22,7 +23,6 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
       otp: '',
     },
   })
-  const userID = 'clr50ystz0004pyjrvxkyn2r6'
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setError('')

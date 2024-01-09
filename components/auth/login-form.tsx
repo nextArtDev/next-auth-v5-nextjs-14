@@ -3,7 +3,7 @@
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { useState, useTransition } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 
@@ -25,6 +25,7 @@ import { FormSuccess } from './form-success'
 import { login } from '@/actions/login'
 
 export const LoginForm = () => {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl')
   const urlError =
@@ -35,12 +36,13 @@ export const LoginForm = () => {
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
+  const [activation, setActivation] = useState<boolean | undefined>(false)
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: '',
+      phone: '',
       password: '',
     },
   })
@@ -52,14 +54,22 @@ export const LoginForm = () => {
     startTransition(() => {
       login(values, callbackUrl)
         .then((data) => {
-          if (data?.error) {
-            form.reset()
+          if (
+            data?.error ===
+            'شما اکانت خود را از طریق کد ارسال شده فعال نکرده‌اید.'
+          ) {
+            setError(data.error)
+            setActivation(true)
+          } else if (data?.error) {
+            // form.reset()
             setError(data.error)
           }
-          if (data?.success) {
-            form.reset()
-            setSuccess(data.success)
-          }
+          // form.reset()
+          // router.push('/')
+
+          // if (data?.success) {
+          //   setSuccess(data.success)
+          // }
           //     if (data?.twoFactor) {
           //       setShowTwoFactor(true)
           //     }
@@ -70,8 +80,8 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Welcome back"
-      backButtonLabel="Don't have an account?"
+      headerLabel="خوش آمدید"
+      backButtonLabel="هنوز اکانت نساخته‌اید؟"
       backButtonHref="/register"
       showSocial
     >
@@ -80,16 +90,16 @@ export const LoginForm = () => {
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>شماره موبایل</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="john.doe@example.com"
-                      type="email"
+                      placeholder="09000000000"
+                      type="string"
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,7 +111,7 @@ export const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>رمز عبور</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -116,7 +126,7 @@ export const LoginForm = () => {
                     asChild
                     className="px-0 font-normal"
                   >
-                    <Link href="/reset">Forgot password?</Link>
+                    <Link href="/reset">رمز عبور را فراموش کرده‌اید؟</Link>
                   </Button>
                   <FormMessage />
                 </FormItem>
@@ -125,9 +135,17 @@ export const LoginForm = () => {
           </div>
           <FormError message={error || urlError} />
           <FormSuccess message={success} />
-          <Button disabled={isPending} type="submit" className="w-full">
-            {showTwoFactor ? 'Confirm' : 'Login'}
-          </Button>
+          {activation ? (
+            <Button variant={'destructive'} className="w-full">
+              <Link href={`/otp/${form.getValues('phone')}/reactive`}>
+                فعالسازی اکانت
+              </Link>
+            </Button>
+          ) : (
+            <Button disabled={isPending} type="submit" className="w-full">
+              {showTwoFactor ? 'تایید' : 'ورود'}
+            </Button>
+          )}
         </form>
       </Form>
     </CardWrapper>

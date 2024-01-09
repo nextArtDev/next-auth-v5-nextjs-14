@@ -1,14 +1,20 @@
+import { auth } from '@/auth'
 import { LoginButton } from '@/components/auth/login-button'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { signOut } from 'next-auth/react'
+import Link from 'next/link'
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
   return (
     <main className="flex h-full flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-200 to-blue-400">
       <div className="space-y-6 text-center">
         <h1 className={cn('text-6xl font-semibold text-white drop-shadow-md')}>
           🔐 Auth
         </h1>
+        <Link href={'/logout'}>Log uot</Link>
+        <p>{session?.user.name}</p>
         <p className="text-white text-lg">A simple authentication service</p>
         <div>
           <LoginButton asChild>

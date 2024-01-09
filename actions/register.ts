@@ -3,7 +3,7 @@
 import * as z from 'zod'
 import { RegisterSchema } from '@/schemas'
 import { sendSms, verifySms } from './sms'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { getUserById, getUserByPhoneNumber } from '@/data/user'
 import { prisma } from '@/lib/prisma'
 

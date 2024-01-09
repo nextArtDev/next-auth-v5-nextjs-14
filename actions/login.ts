@@ -5,14 +5,16 @@ import { AuthError } from 'next-auth'
 import { LoginSchema } from '@/schemas'
 
 // import { db } from "@/lib/db";
-// import { signIn } from "@/auth";
+import { signIn } from '@/auth'
 // import { getUserByEmail } from "@/data/user";
 // import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 // import {
 //   sendVerificationEmail,
 //   sendTwoFactorTokenEmail,
 // } from "@/lib/mail";
-// import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
+import { getUserByPhoneNumber } from '@/data/user'
+import { sendSms, verifySms } from './sms'
 // import {
 //   generateVerificationToken,
 //   generateTwoFactorToken
@@ -28,29 +30,35 @@ export const login = async (
   const validatedFields = LoginSchema.safeParse(values)
 
   if (!validatedFields.success) {
-    return { error: 'Invalid fields!' }
+    return { error: 'ورودی معتبر نیست!' }
   }
-  return { success: 'Email sent!' }
-  // const { email, password, code } = validatedFields.data
+  // return { success: 'Email sent!' }
+  const { phone, password } = validatedFields.data
 
-  // const existingUser = await getUserByEmail(email);
+  const existingUser = await getUserByPhoneNumber(phone)
+  if (!existingUser || !existingUser.phone || !existingUser.password) {
+    return { error: 'کاربر با این شماره موجود نیست!' }
+  }
 
-  // if (!existingUser || !existingUser.email || !existingUser.password) {
-  //   return { error: "Email does not exist!" }
-  // }
+  if (!existingUser.isVerified) {
+    return { error: 'شما اکانت خود را از طریق کد ارسال شده فعال نکرده‌اید.' }
+    //   const smsCode = await sendSms({ phone: existingUser.phone })
 
-  // if (!existingUser.emailVerified) {
-  //   const verificationToken = await generateVerificationToken(
-  //     existingUser.email,
-  //   );
+    //   if (!smsCode?.error && smsCode?.verificationCode) {
 
-  //   await sendVerificationEmail(
-  //     verificationToken.email,
-  //     verificationToken.token,
-  //   );
+    //     const smsVerification = await verifySms({
+    //       id: existingUser.id,
+    //       verificationCode: JSON.stringify(smsCode.verificationCode),
+    //     })
+    //   }
 
-  //   return { success: "Confirmation email sent!" };
-  // }
+    //   // await sendVerificationEmail(
+    //   //   verificationToken.email,
+    //   //   verificationToken.token
+    //   // )
+
+    //   // return { success: 'Confirmation email sent!' }
+  }
 
   // if (existingUser.isTwoFactorEnabled && existingUser.email) {
   //   if (code) {
@@ -102,22 +110,22 @@ export const login = async (
   //   }
   // }
 
-  // try {
-  //   await signIn("credentials", {
-  //     email,
-  //     password,
-  //     redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-  //   })
-  // } catch (error) {
-  //   if (error instanceof AuthError) {
-  //     switch (error.type) {
-  //       case "CredentialsSignin":
-  //         return { error: "Invalid credentials!" }
-  //       default:
-  //         return { error: "Something went wrong!" }
-  //     }
-  //   }
+  try {
+    await signIn('credentials', {
+      phone,
+      password,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+    })
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return { error: 'مشخصات نامعتبر است!' }
+        default:
+          return { error: 'مشکلی پیش آمده، لطفا دوباره امتحان کنید!' }
+      }
+    }
 
-  //   throw error;
-  // }
+    throw error
+  }
 }
