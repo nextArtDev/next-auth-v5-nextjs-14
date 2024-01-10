@@ -7,9 +7,9 @@ export type ExtendedUser = DefaultSession['user'] & {
   isVerified: boolean
   image?: string
 }
-
+export type ExtendedUserWithoutEmail = Omit<ExtendedUser, 'email'>
 declare module 'next-auth' {
   interface Session {
-    user: ExtendedUser
+    user: ExtendedUserWithoutEmail
   }
 }

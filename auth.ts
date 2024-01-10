@@ -35,8 +35,8 @@ export const {
 
       const existingUser = await getUserById(user.id)
 
-      // Prevent sign in without email verification
-      if (!existingUser?.isVerified) return false
+      // Prevent sign in without verification
+      if (!existingUser || !existingUser?.isVerified) return false
 
       //   if (existingUser.isTwoFactorEnabled) {
       //     const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
@@ -66,16 +66,22 @@ export const {
         session.user.isVerified = token.isVerified as boolean
       }
 
+      if (token.picture && session.user.image) {
+        session.user.image = token.picture
+      }
+
       if (session.user) {
         session.user.name = token.name
         session.user.phone = token.phone as string
-        session.user.image = token.picture || null || undefined
         // session.user.isOAuth = token.isOAuth as boolean
       }
 
       return session
     },
-    async jwt({ token, user }) {
+    async jwt({ token }) {
+      //sub is user.id but "user" field is not reliable to use
+
+      // It means we're logged out
       if (!token.sub) return token
 
       const existingUser = await getUserById(token.sub)
