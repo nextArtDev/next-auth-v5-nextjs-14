@@ -5,7 +5,7 @@ export type ExtendedUser = DefaultSession['user'] & {
   role: Role
   phone: string
   isVerified: boolean
-  image: Image
+  image?: string
 }
 
 declare module 'next-auth' {

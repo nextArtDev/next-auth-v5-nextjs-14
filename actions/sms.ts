@@ -24,20 +24,20 @@ export const sendSms = async (values: z.infer<typeof PhoneSchema>) => {
   )
 
   try {
-    // console.log({ phone, verificationCode })
-    const messageId = await client.manualSendCode(
-      phone,
-      `کد تایید شما: ${
-        verificationCode as number
-      } \n مدت اعتبار این کد ۲ دقیقه می‌باشد`
-    )
+    console.log({ phone, verificationCode })
+    // const messageId = await client.manualSendCode(
+    //   phone,
+    //   `کد تایید شما: ${
+    //     verificationCode as number
+    //   } \n مدت اعتبار این کد ۲ دقیقه می‌باشد`
+    // )
 
-    if (messageId <= 2000) {
-      return {
-        error: 'ارسال کد تایید با خطا مواجه شد لطفا دوباره تلاش نمایید',
-        // verificationCode: null,
-      }
-    }
+    // if (messageId <= 2000) {
+    //   return {
+    //     error: 'ارسال کد تایید با خطا مواجه شد لطفا دوباره تلاش نمایید',
+    //     // verificationCode: null,
+    //   }
+    // }
     return { success: 'کد تایید به شماره شما ارسال شد.', verificationCode }
   } catch (error) {
     console.log(error)

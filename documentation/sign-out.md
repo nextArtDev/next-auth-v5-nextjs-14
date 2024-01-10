@@ -1,3 +1,8 @@
+# Using logout function in server components
+
+## Using signOut function in server components 
+
+```typescript
 import { auth, signOut } from '@/auth'
 
 type Props = {}
@@ -19,3 +24,4 @@ async function page({}: Props) {
 }
 
 export default page
+```

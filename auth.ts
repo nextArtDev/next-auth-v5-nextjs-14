@@ -5,6 +5,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import authConfig from '@/auth.config'
 import { getUserById } from '@/data/user'
 import { prisma } from './lib/prisma'
+import { getImageById } from './data/image'
 // import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation'
 // import { getAccountByUserId } from './data/account'
 
@@ -68,6 +69,7 @@ export const {
       if (session.user) {
         session.user.name = token.name
         session.user.phone = token.phone as string
+        session.user.image = token.picture || null || undefined
         // session.user.isOAuth = token.isOAuth as boolean
       }
 
@@ -81,6 +83,10 @@ export const {
       if (!existingUser) return token
 
       //   const existingAccount = await getAccountByUserId(existingUser.id)
+      if (existingUser.imageId) {
+        const image = await getImageById(existingUser.imageId)
+        token.picture = image?.url
+      }
 
       //   token.isOAuth = !!existingAccount
       token.name = existingUser.name
