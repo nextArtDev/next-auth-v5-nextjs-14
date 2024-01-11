@@ -39,14 +39,19 @@ export const SettingsSchema = z
 
 export const NewPasswordSchema = z.object({
   password: z.string().min(6, {
-    message: 'Minimum of 6 characters required',
+    message: 'حداقل 6 کاراکتر الزامی است.',
   }),
 })
 
 export const ResetSchema = z.object({
-  email: z.string().email({
-    message: 'Email is required',
-  }),
+  phone: z
+    .string()
+    .regex(new RegExp('^09\\d{9}$'), {
+      message: 'شماره موبایل معتبر نیست.',
+    })
+    .regex(new RegExp('^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$'), {
+      message: 'شماره موبایل معتبر نیست.',
+    }),
 })
 
 export const LoginSchema = z.object({
