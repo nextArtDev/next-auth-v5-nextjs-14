@@ -1,6 +1,11 @@
 'use client'
 
-import React, { startTransition, useEffect, useState } from 'react'
+import React, {
+  startTransition,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 
 import { activation } from '@/actions/register'
@@ -8,7 +13,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
 import { sendSms } from '@/actions/sms'
-import OtpInput from '../../components/otp-input'
+import OtpInput from '../../../../../components/auth/otp-input'
 import { Button } from '@/components/ui/button'
 import { reactivate } from '@/actions/reactivate'
 
@@ -22,6 +27,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
   const [sentSms, setSentSms] = useState(false)
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
+  const [isPending, startTransition] = useTransition()
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       otp: '',
@@ -50,7 +56,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
             router.push('/')
           }
           if (res.error) {
-            router.push('/register')
+            // router.push('/register')
           }
         }
       )
@@ -67,13 +73,15 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
     // setError(res?.error)
     // setSuccess(res?.success)
     startTransition(() => {
-      reactivate({ phone: params.phone }).then((res) => {
-        setError(res.error)
-        setSuccess(res.success)
-        if (res.success) {
-          setSentSms(true)
-        }
-      })
+      reactivate({ phone: params.phone })
+        .then((res) => {
+          setError(res.error)
+          setSuccess(res.success)
+          if (res.success) {
+            setSentSms(true)
+          }
+        })
+        .catch(() => {})
     })
 
     // console.log(data) // Handle form submission
@@ -95,6 +103,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
             name="otp"
             render={({ field: { onChange, value } }) => (
               <OtpInput
+                disabled={isPending}
                 value={value}
                 valueLength={6}
                 onChange={onChange}

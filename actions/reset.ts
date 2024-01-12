@@ -73,13 +73,8 @@ export const resetPass = async ({ values, phone }: ResetPassProps) => {
   if (!validatedFields.success) {
     return { error: 'Invalid fields!' }
   }
-  //   const session = await auth()
-
-  //   if (!session?.user) return
 
   const { password } = validatedFields.data
-
-  //   const { phone } = session.user
 
   try {
     const user = await getUserByPhoneNumber(phone)

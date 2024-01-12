@@ -1,13 +1,14 @@
 'use client'
 
-import React, { startTransition, useState } from 'react'
+import React, { startTransition, useState, useTransition } from 'react'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
-import OtpInput from '../components/otp-input'
+import OtpInput from '../../../../components/auth/otp-input'
 import { activation } from '@/actions/register'
 import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
 import { sendSms } from '@/actions/sms'
+import { Loader2 } from 'lucide-react'
 
 type FormData = {
   otp: string
@@ -18,6 +19,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
 
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
+  const [isPending, startTransition] = useTransition()
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       otp: '',
@@ -37,7 +39,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
             router.push('/')
           }
           if (res.error) {
-            router.push('/register')
+            // router.push('/register')
           }
         }
       )
@@ -58,8 +60,10 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
       <Controller
         control={control}
         name="otp"
+        disabled={isPending}
         render={({ field: { onChange, value } }) => (
           <OtpInput
+            disabled={isPending}
             value={value}
             valueLength={6}
             onChange={onChange}

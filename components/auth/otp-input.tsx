@@ -1,4 +1,5 @@
 'use client'
+import { Loader2 } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 // import './OtpInput.css'
@@ -8,6 +9,7 @@ export type Props = {
   valueLength: number
   onChange: (value: string) => void
   onComplete?: () => void
+  disabled?: boolean
 }
 
 export default function OtpInput({
@@ -15,6 +17,7 @@ export default function OtpInput({
   valueLength = 6,
   onChange,
   onComplete,
+  disabled,
 }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const RE_DIGIT = new RegExp(/^\d+$/)
@@ -144,21 +147,26 @@ export default function OtpInput({
 
   return (
     <div className="otp-group flex w-full max-w-[360px]">
-      {valueItems.map((digit, idx) => (
-        <input
-          key={idx}
-          type={'text'}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          pattern="\d{1}"
-          maxLength={valueLength}
-          className="otp-input w-full h-14 border border-[#ccc] rounded-sm p-0 text-center text-[32px] font-bold "
-          value={digit}
-          onChange={(e) => inputOnChange(e, idx)}
-          onKeyDown={inputOnKeyDown}
-          onFocus={inputOnFocus}
-        />
-      ))}
+      {!disabled ? (
+        valueItems.map((digit, idx) => (
+          <input
+            disabled={disabled}
+            key={idx}
+            type={'text'}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{1}"
+            maxLength={valueLength}
+            className="otp-input w-full h-14 border border-[#ccc] rounded-sm p-0 text-center text-[32px] font-bold "
+            value={digit}
+            onChange={(e) => inputOnChange(e, idx)}
+            onKeyDown={inputOnKeyDown}
+            onFocus={inputOnFocus}
+          />
+        ))
+      ) : (
+        <Loader2 className="animate-spin w-12 h-12 opacity-55 " />
+      )}
     </div>
   )
 }

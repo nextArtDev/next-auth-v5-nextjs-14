@@ -1,6 +1,11 @@
 'use client'
 
-import React, { startTransition, useEffect, useState } from 'react'
+import React, {
+  startTransition,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 
 import { activation } from '@/actions/register'
@@ -8,7 +13,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
 import { sendSms } from '@/actions/sms'
-import OtpInput from '../../components/otp-input'
+import OtpInput from '../../../../../components/auth/otp-input'
 import { Button } from '@/components/ui/button'
 import { reactivate } from '@/actions/reactivate'
 
@@ -20,6 +25,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
   const router = useRouter()
   // console.log(params.phone)
   const [sentSms, setSentSms] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const { control, handleSubmit } = useForm<FormData>({
@@ -94,6 +100,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
           name="otp"
           render={({ field: { onChange, value } }) => (
             <OtpInput
+              disabled={isPending}
               value={value}
               valueLength={6}
               onChange={onChange}
