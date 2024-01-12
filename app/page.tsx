@@ -8,6 +8,11 @@ import Link from 'next/link'
 
 export default async function Home() {
   const session = await auth()
+
+  // Client Side
+  // const data = useSession()
+  // const session = data.data
+
   // console.log(session?.user)
   return (
     <main className="flex h-full flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-200 to-blue-400">

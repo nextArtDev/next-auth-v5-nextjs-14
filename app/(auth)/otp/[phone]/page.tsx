@@ -20,7 +20,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, startTransition] = useTransition()
-  const { control, handleSubmit } = useForm<FormData>({
+  const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       otp: '',
     },
@@ -40,6 +40,7 @@ export default function OtpForm({ params }: { params: { phone: string } }) {
           }
           if (res.error) {
             // router.push('/register')
+            reset()
           }
         }
       )
