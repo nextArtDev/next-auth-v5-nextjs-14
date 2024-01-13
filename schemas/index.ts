@@ -1,12 +1,25 @@
 import * as z from 'zod'
-// import { UserRole } from "@prisma/client";
+import { Role, Image } from '@prisma/client'
 
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
-    isTwoFactorEnabled: z.optional(z.boolean()),
-    // role: z.enum([UserRole.ADMIN, UserRole.USER]),
-    email: z.optional(z.string().email()),
+    // image:Image,
+
+    role: z.enum([Role.ADMIN, Role.USER]),
+    phone: z.optional(
+      z
+        .string()
+        .regex(new RegExp('^09\\d{9}$'), {
+          message: 'شماره موبایل معتبر نیست.',
+        })
+        .regex(
+          new RegExp('^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$'),
+          {
+            message: 'شماره موبایل معتبر نیست.',
+          }
+        )
+    ),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
   })
