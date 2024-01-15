@@ -93,8 +93,8 @@ export const {
         const image = await getImageById(existingUser.imageId)
         token.picture = image?.url
       }
-
-      //   token.isOAuth = !!existingAccount
+      // We do all them to update session when we update user
+      // token.isOAuth = !!existingUser
       token.name = existingUser.name
       token.phone = existingUser.phone
       token.role = existingUser.role

@@ -6,7 +6,7 @@ export const SettingsSchema = z
     name: z.optional(z.string()),
     // image:Image,
 
-    role: z.enum([Role.ADMIN, Role.USER]),
+    // role: z.enum([Role.ADMIN, Role.USER]),
     phone: z.optional(
       z
         .string()
@@ -32,7 +32,7 @@ export const SettingsSchema = z
       return true
     },
     {
-      message: 'New password is required!',
+      message: 'رمز عبور جدید را وارد کنید!',
       path: ['newPassword'],
     }
   )
@@ -45,7 +45,7 @@ export const SettingsSchema = z
       return true
     },
     {
-      message: 'Password is required!',
+      message: 'رمز عبور را وارد کنید!',
       path: ['password'],
     }
   )

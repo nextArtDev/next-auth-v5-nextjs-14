@@ -32,6 +32,7 @@ import { useCurrentUser } from '@/hooks/use-current-user'
 import { Role } from '@prisma/client'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
+import { settings } from '@/actions/settings'
 
 const SettingsPage = () => {
   const user = useCurrentUser()
@@ -43,28 +44,29 @@ const SettingsPage = () => {
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
+    // It should be undefined not "" because prisma add '' but not undefined when ...values
     defaultValues: {
       password: undefined,
       newPassword: undefined,
       name: user?.name || undefined,
       phone: user?.phone || undefined,
-      role: user?.role || undefined,
+      // role: user?.role || undefined,
     },
   })
 
   const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
     startTransition(() => {
-      // settings(values)
-      //   .then((data) => {
-      //     if (data.error) {
-      //       setError(data.error)
-      //     }
-      //     if (data.success) {
-      //       update()
-      //       setSuccess(data.success)
-      //     }
-      //   })
-      //   .catch(() => setError('Something went wrong!'))
+      settings(values)
+        .then((data) => {
+          if (data.error) {
+            setError(data.error)
+          }
+          if (data.success) {
+            update()
+            setSuccess(data.success)
+          }
+        })
+        .catch(() => setError('Something went wrong!'))
     })
   }
 
@@ -106,7 +108,8 @@ const SettingsPage = () => {
                         <Input
                           {...field}
                           placeholder="john.doe@example.com"
-                          disabled={isPending}
+                          disabled={true}
+                          // disabled={isPending}
                         />
                       </FormControl>
                       <FormMessage />
@@ -151,7 +154,7 @@ const SettingsPage = () => {
                 />
               </>
               {/* )} */}
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
@@ -176,7 +179,7 @@ const SettingsPage = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               {/* {user?.isOAuth === false && (
                 <FormField
                   control={form.control}
